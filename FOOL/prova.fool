@@ -1,0 +1,5 @@
+let
+  var x:int = 6;
+  var y:bool = true;
+in  
+  print ( x-y );
