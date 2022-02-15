@@ -9,5 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="antlr4-runtime-4.9.1" level="application" />
+    <orderEntry type="library" name="antlr4-runtime-4.9.1" level="project" />
   </component>
 </module>
