@@ -238,13 +238,15 @@ public class AST {
 	// OBJECT-ORIENTED EXTENSION
 
 	public static class ClassNode extends DecNode{
-		final List<FieldNode> fields;
-		final List<MethodNode> methods;
+		final String id;
+		final List<Node> fields;
+		final List<Node> methods;
 		final String superID;
-		ClassNode(List<FieldNode> f, List<MethodNode> m, String id, TypeNode t) {
+		ClassNode(String id, List<FieldNode> f, List<MethodNode> m, String superID, TypeNode t) {
+			this.id = id;
 			fields = Collections.unmodifiableList(f);
 			methods = Collections.unmodifiableList(m);
-			superID = id;
+			this.superID = superID;
 			type = t;
 		}
 
@@ -323,12 +325,22 @@ public class AST {
 	}
 
 	public static class ClassTypeNode extends TypeNode {
+		final ArrayList<TypeNode> allFields;
+		final ArrayList<ArrowTypeNode> allMethods;
+		ClassTypeNode(ArrayList<TypeNode> f, ArrayList<ArrowTypeNode> m){
+			allFields = f;
+			allMethods = m;
+		}
 
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
 	}
 
 	public static class MethodTypeNode extends TypeNode {
+		final ArrowTypeNode fun;
+		MethodTypeNode(ArrowTypeNode f) {
+			fun = f;
+		}
 
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
