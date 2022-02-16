@@ -233,7 +233,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 		int start;
 		String superID;
 
-		if (c.EXTENDS() != null){ 
+		if (c.EXTENDS() != null){
 			start = 2;
 			superID = c.ID(1).getText();
 		}else{
