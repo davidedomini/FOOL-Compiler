@@ -239,15 +239,14 @@ public class AST {
 
 	public static class ClassNode extends DecNode{
 		final String id;
-		final List<Node> fields;
-		final List<Node> methods;
+		final List<FieldNode> fields;
+		final List<MethodNode> methods;
 		final String superID;
-		ClassNode(String id, List<FieldNode> f, List<MethodNode> m, String superID, TypeNode t) {
+		ClassNode(String id, List<FieldNode> f, List<MethodNode> m, String superID) {
 			this.id = id;
 			fields = Collections.unmodifiableList(f);
 			methods = Collections.unmodifiableList(m);
 			this.superID = superID;
-			type = t;
 		}
 
 		@Override
@@ -285,13 +284,13 @@ public class AST {
 	}
 
 	public static class ClassCallNode extends Node {
-		final String classId;
+		final String objectId;
 		final String methodId;
 		final List<Node> arglist;
 		STentry entry;
 		int nl;
 		ClassCallNode(String cId, String mId, List<Node> p) {
-			classId = cId;
+			objectId = cId;
 			methodId = mId;
 			arglist = Collections.unmodifiableList(p);
 		}
@@ -315,11 +314,6 @@ public class AST {
 	}
 
 	public static class EmptyNode extends DecNode{
-		final String id;
-		STentry entry;
-		int nl;
-		EmptyNode(String i) {id = i;}
-
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
 	}
