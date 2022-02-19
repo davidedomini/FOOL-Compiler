@@ -12,13 +12,13 @@ public class TypeRels {
 
 	// valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base: IntTypeNode o BoolTypeNode
 	public static boolean isSubtype(TypeNode a, TypeNode b) {
-//		return a.getClass().equals(b.getClass()) || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode));
 
-		if (a instanceof EmptyTypeNode && b instanceof RefTypeNode){
+		if (a.getClass().equals(b.getClass()) || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))){
 			return true;
 		}
 
-		if (a.getClass().equals(b.getClass()) || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))){
+		// OBEJECT-ORIENTATION EXTENSION
+		if (a instanceof EmptyTypeNode && b instanceof RefTypeNode){
 			return true;
 		}
 
@@ -29,9 +29,15 @@ public class TypeRels {
 		if (a instanceof ArrowTypeNode && b instanceof ArrowTypeNode){
 			ArrowTypeNode funA = (ArrowTypeNode) a;
 			ArrowTypeNode funB = (ArrowTypeNode) b;
-			if (isSubtype(funA.ret,funB.ret)){
+			if (isSubtype(funA.ret,funB.ret)){ //co-varianza
+				//contro-varianza
 				if (funA.parlist.size() == funB.parlist.size()){
-
+					for (int i=0; i<funA.parlist.size(); i++){
+						if(!(isSubtype(funB.parlist.get(i),funA.parlist.get(i)))){
+							return false;
+						}
+					}
+					return true;
 				}else{
 					return false;
 				}
