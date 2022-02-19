@@ -39,8 +39,6 @@ public class AST {
 	    	exp=e;
 	    }
 		
-		//void setType(TypeNode t) {type = t;}
-		
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
 	}
@@ -242,6 +240,7 @@ public class AST {
 		final List<FieldNode> fields;
 		final List<MethodNode> methods;
 		final String superID;
+		STentry superEntry;
 		ClassNode(String id, List<FieldNode> f, List<MethodNode> m, String superID) {
 			this.id = id;
 			fields = Collections.unmodifiableList(f);
@@ -278,8 +277,6 @@ public class AST {
 			exp=e;
 		}
 
-		//void setType(TypeNode t) {type = t;}
-
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
 	}
@@ -289,6 +286,7 @@ public class AST {
 		final String methodId;
 		final List<Node> arglist;
 		STentry entry;
+		STentry methodEntry;
 		int nl;
 		ClassCallNode(String cId, String mId, List<Node> p) {
 			objectId = cId;
