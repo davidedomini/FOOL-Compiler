@@ -241,6 +241,7 @@ public class AST {
 		final List<MethodNode> methods;
 		final String superID;
 		STentry superEntry;
+		TypeNode type;
 		ClassNode(String id, List<FieldNode> f, List<MethodNode> m, String superID) {
 			this.id = id;
 			fields = Collections.unmodifiableList(f);

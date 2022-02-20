@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class TypeRels {
 
-	public static Map<String, String> superType = new HashMap<>();
+	public static Map<String, String> superType = new HashMap<>(); // mappa il nome di una classe in quello della sua super classe
 
 	// valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base: IntTypeNode o BoolTypeNode
 	public static boolean isSubtype(TypeNode a, TypeNode b) {

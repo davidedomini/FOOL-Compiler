@@ -263,6 +263,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 			virtualTable = new HashMap<>();
 		}
 
+		n.type = type;
 		STentry entry = new STentry(0, type, decOffset--);
 		if (hm.put(n.id, entry) != null) {
 			System.out.println("Class id " + n.id + " at line "+ n.getLine() +" already declared");
