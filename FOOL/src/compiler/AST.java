@@ -38,7 +38,9 @@ public class AST {
 	    	declist=Collections.unmodifiableList(dl); 
 	    	exp=e;
 	    }
-		
+
+		void setType(TypeNode t){type = t;}
+
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
 	}
@@ -270,6 +272,8 @@ public class AST {
 		final List<DecNode> declist;
 		final Node exp;
 		int offset;
+		String label;
+
 		MethodNode(String i, TypeNode rt, List<ParNode> pl, List<DecNode> dl, Node e) {
 			id=i;
 			retType=rt;
@@ -277,6 +281,8 @@ public class AST {
 			declist=Collections.unmodifiableList(dl);
 			exp=e;
 		}
+
+		void setType(TypeNode t){ type = t;}
 
 		@Override
 		public <S,E extends Exception> S accept(BaseASTVisitor<S,E> visitor) throws E {return visitor.visitNode(this);}
