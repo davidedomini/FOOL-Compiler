@@ -234,6 +234,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 		int start;
 		String superID;
 
+		// super class
 		if (c.EXTENDS() != null){
 			start = 2;
 			superID = c.ID(1).getText();
@@ -242,16 +243,19 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 			superID = null;
 		}
 
+		// fields
 		List<FieldNode> fields = new ArrayList<>();
-		for (int i = start; i < c.ID().size(); i++){
-			FieldNode f = new FieldNode(c.ID(i).getText(), (TypeNode) visit(c.type(i)));
+		for (int i = start, j = 0; i < c.ID().size(); i++, j++){
+			FieldNode f = new FieldNode(c.ID(i).getText(), (TypeNode) visit(c.type(j)));
 			f.setLine(c.ID(i).getSymbol().getLine());
 			fields.add(f);
 		}
 
+		// methods
 		List<MethodNode> methods = new ArrayList<>();
 		for (MethdecContext dec : c.methdec()) methods.add((MethodNode) visit(dec));
 
+		// new class node
 		Node n = null;
 		if (c.ID().size()>0) { //non-incomplete ST
 			n = new ClassNode(c.ID(0).getText(), fields, methods, superID);
@@ -265,6 +269,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 	public Node visitMethdec(MethdecContext c) {
 		if (print) printVarAndProdName(c);
 
+		// parametri
 		List<ParNode> parList = new ArrayList<>();
 		for (int i = 1; i < c.ID().size(); i++) {
 			ParNode p = new ParNode(c.ID(i).getText(),(TypeNode) visit(c.type(i)));
@@ -272,14 +277,17 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 			parList.add(p);
 		}
 
+		// dichiarazioni all'interno del metodo
 		List<DecNode> decList = new ArrayList<>();
 		for (DecContext dec : c.dec()) decList.add((DecNode) visit(dec));
 
+		// new method node
 		Node n = null;
 		if (c.ID().size()>0) { //non-incomplete ST
 			n = new MethodNode(c.ID(0).getText(),(TypeNode)visit(c.type(0)),parList,decList,visit(c.exp()));
 			n.setLine(c.FUN().getSymbol().getLine());
 		}
+
 		return n;
 	}
 
@@ -287,11 +295,16 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 	public Node visitDotCall(DotCallContext c) {
 		if (print) printVarAndProdName(c);
 
+		// argomenti chiamata metodo
 		List<Node> arglist = new ArrayList<>();
 		for (ExpContext arg : c.exp()) arglist.add(visit(arg));
 
-		Node n = new ClassCallNode(c.ID(0).getText(), c.ID(1).getText(), arglist);
+		// new dot call node
+		Node n = new ClassCallNode(c.ID(0).getText(), // object id
+				c.ID(1).getText(), // method id
+				arglist);
 		n.setLine(c.ID(0).getSymbol().getLine());
+
 		return n;
 	}
 
@@ -299,11 +312,14 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 	public Node visitNew(NewContext c) {
 		if (print) printVarAndProdName(c);
 
+		// argomenti
 		List<Node> arglist = new ArrayList<>();
 		for (ExpContext arg : c.exp()) arglist.add(visit(arg));
 
+		// new node
 		Node n = new NewNode(c.ID().getText(), arglist);
 		n.setLine(c.ID().getSymbol().getLine());
+
 		return n;
 	}
 
@@ -313,6 +329,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 
 		Node n = new EmptyNode();
 		n.setLine(c.NULL().getSymbol().getLine());
+
 		return n;
 	}
 
@@ -321,6 +338,7 @@ public class ASTGenerationSTVisitor extends FOOLBaseVisitor<Node> {
 
 		Node n = new RefTypeNode(c.ID().getText());
 		n.setLine(c.ID().getSymbol().getLine());
+
 		return n;
 	}
 }

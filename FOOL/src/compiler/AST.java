@@ -1,6 +1,8 @@
 package compiler;
 
 import java.util.*;
+
+import com.sun.jdi.ClassType;
 import compiler.lib.*;
 
 public class AST {
@@ -243,7 +245,7 @@ public class AST {
 		final List<MethodNode> methods;
 		final String superID;
 		STentry superEntry;
-		TypeNode type;
+		ClassTypeNode type;
 		ClassNode(String id, List<FieldNode> f, List<MethodNode> m, String superID) {
 			this.id = id;
 			fields = Collections.unmodifiableList(f);
@@ -272,7 +274,7 @@ public class AST {
 		final List<DecNode> declist;
 		final Node exp;
 		int offset;
-		String label;
+		String label; // code generation
 
 		MethodNode(String i, TypeNode rt, List<ParNode> pl, List<DecNode> dl, Node e) {
 			id=i;
@@ -292,7 +294,7 @@ public class AST {
 		final String objectId;
 		final String methodId;
 		final List<Node> arglist;
-		STentry entry;
+		STentry entry; // oggetto
 		STentry methodEntry;
 		int nl;
 		ClassCallNode(String cId, String mId, List<Node> p) {
@@ -309,7 +311,6 @@ public class AST {
 		final String classId;
 		final List<Node> arglist;
 		STentry entry;
-		int nl;
 		NewNode(String cId, List<Node> p) {
 			classId = cId;
 			arglist = Collections.unmodifiableList(p);

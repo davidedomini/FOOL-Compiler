@@ -294,9 +294,9 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		// visito metodi e aggiorno dispatch table
 		for (MethodNode method : n.methods){
 			visit(method);
-			if (method.offset < dT.size()){
+			if (method.offset < dT.size()){ // overriding
 				dT.set(method.offset,method.label);
-			} else {
+			} else { // no overriding
 				dT.add(method.offset, method.label);
 			}
 		}
@@ -306,7 +306,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		String codeMethod = null;
 		for (String label : dT){
 			codeMethod = nlJoin(codeMethod,
-					"push" + label, // metto sullo stack la label
+					"push " + label, // metto sullo stack la label
 					"lhp", // metto sullo stack il valore di hp
 					"sw", // fa la pop dei due valori e va a scrivere all'indirizzo puntato da hp la label
 					// incremento il valore di hp
@@ -331,10 +331,13 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 			declCode = nlJoin(declCode,visit(dec));
 			popDecl = nlJoin(popDecl,"pop");
 		}
-		for (int i=0;i<n.parlist.size();i++) popParl = nlJoin(popParl,"pop");
+		for (int i=0;i<n.parlist.size();i++){
+			popParl = nlJoin(popParl,"pop");
+		}
 
 		String funl = freshFunLabel();
 		n.label = funl;
+
 		putCode(
 				nlJoin(
 						funl+":",
@@ -353,6 +356,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 						"js"  // jump to to popped address
 				)
 		);
+
 		return null;
 	}
 
@@ -367,11 +371,15 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 
 	@Override
 	public String visitNode(ClassCallNode n) {
-		if (print) printNode(n,n.objectId);
+		if (print) printNode(n,n.objectId + "." + n.methodId);
 
 		String argCode = null, getAR = null;
-		for (int i=n.arglist.size()-1;i>=0;i--) argCode=nlJoin(argCode,visit(n.arglist.get(i)));
-		for (int i = 0;i<n.nl-n.entry.nl;i++) getAR=nlJoin(getAR,"lw"); // recupero object pointer
+		for (int i=n.arglist.size()-1;i>=0;i--) {
+			argCode = nlJoin(argCode, visit(n.arglist.get(i)));
+		}
+		for (int i = 0;i<n.nl-n.entry.nl;i++) {
+			getAR=nlJoin(getAR,"lw"); // recupero object pointer risalendo della differenza di nl
+		}
 
 		return nlJoin(
 				"lfp", // load Control Link (pointer to frame of function "id" caller)
@@ -383,6 +391,7 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 				"stm", // set $tm to popped value (with the aim of duplicating top of stack)
 				"ltm", // load Access Link (pointer to frame of function "id" declaration)
 				"ltm", // duplicate top of stack
+				"lw", // TODO
 				"push "+n.methodEntry.offset, "add", // compute address of method declaration
 				"lw", // load address of "id" method
 				"js"  // jump to popped address (saving address of subsequent instruction in $ra)
@@ -394,8 +403,12 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 		if (print) printNode(n,n.id);
 
 		String argCode = null, getAR = null;
-		for (int i=n.arglist.size()-1;i>=0;i--) argCode=nlJoin(argCode,visit(n.arglist.get(i)));
-		for (int i = 0;i<n.nl-n.entry.nl;i++) getAR=nlJoin(getAR,"lw");
+		for (int i=n.arglist.size()-1;i>=0;i--){
+			argCode=nlJoin(argCode,visit(n.arglist.get(i)));
+		}
+		for (int i = 0;i<n.nl-n.entry.nl;i++){
+			getAR=nlJoin(getAR,"lw");
+		}
 
 		String code =  nlJoin(
 				"lfp", // load Control Link (pointer to frame of function "id" caller)
@@ -447,9 +460,10 @@ public class CodeGenerationASTVisitor extends BaseASTVisitor<String, VoidExcepti
 					"shp" );
 		}
 
-		int off = ExecuteVM.MEMSIZE + n.entry.offset; // offset per recuperare dispatch pointer
 		return nlJoin(argCode,
-				"push" + off,
+				"push " + ExecuteVM.MEMSIZE,
+				"push " + n.entry.offset,
+				"add", // calcoliamo offset
 				"lw", // recupero dispatch pointer
 				"lhp",
 				"sw", // scrivo ad indirizzo hp il dispatch pointer

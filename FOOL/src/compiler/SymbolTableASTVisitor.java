@@ -390,7 +390,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 	public Void visitNode(ClassCallNode n) {
 		if (print) printNode(n);
 
-		// object lo troviamo nella SymbleTable
+		// object lo troviamo nella SymbolTable
 		STentry objectEntry = stLookup(n.objectId);
 		if (objectEntry == null) {
 			System.out.println("Object id " + n.objectId + " at line "+ n.getLine() + " not declared");
@@ -401,8 +401,8 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 				System.out.println("Object id " + n.objectId + " at line "+ n.getLine() + " has not a RefTypeNode");
 				stErrors++;
 			} else{
-				RefTypeNode classId = (RefTypeNode) objectEntry.type;
-				STentry methodEntry = classTable.get(classId.id).get(n.methodId);
+				String classId = ((RefTypeNode) objectEntry.type).id;
+				STentry methodEntry = classTable.get(classId).get(n.methodId);
 				if (methodEntry == null){
 					System.out.println("Method id " + n.objectId + " at line "+ n.getLine() + " not declared");
 					stErrors++;
@@ -415,6 +415,7 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		}
 
 		for (Node arg : n.arglist) visit(arg);
+
 		return null;
 	}
 
