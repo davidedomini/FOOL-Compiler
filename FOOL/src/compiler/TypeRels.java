@@ -3,6 +3,7 @@ package compiler;
 import compiler.AST.*;
 import compiler.lib.*;
 
+import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,40 @@ public class TypeRels {
 		}while(t != null);
 
 		return false;
+	}
+
+	public static TypeNode lowestCommonAncestor(TypeNode a, TypeNode b){
+
+		if (isSubtype(a, new IntTypeNode()) && isSubtype(b, new IntTypeNode())){
+			if (a instanceof IntTypeNode || b instanceof IntTypeNode){
+				return new IntTypeNode();
+			} else {
+				return new BoolTypeNode();
+			}
+		}
+
+
+
+		if ((a instanceof RefTypeNode || a instanceof EmptyTypeNode)
+				&& (b instanceof RefTypeNode || b instanceof EmptyTypeNode)){
+
+			if(a instanceof EmptyTypeNode) return b;
+			if(b instanceof EmptyTypeNode) return a;
+
+			String superClassId = "";
+			String classA = a.getClass().toString();
+
+			do{
+				superClassId = superType.get(classA);
+				RefTypeNode superClass = new RefTypeNode(superClassId);
+				if (isSubtype(b, superClass)){
+					return superClass;
+				}
+				classA = superClassId;
+			}while(superClassId != null);
+		}
+
+		return null;
 	}
 
 }

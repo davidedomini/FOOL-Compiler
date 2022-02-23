@@ -74,17 +74,17 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 		return visit(n.exp);
 	}
 
-	@Override
-	public TypeNode visitNode(IfNode n) throws TypeException {
-		if (print) printNode(n);
-		if ( !(isSubtype(visit(n.cond), new BoolTypeNode())) )
-			throw new TypeException("Non boolean condition in if",n.getLine());
-		TypeNode t = visit(n.th);
-		TypeNode e = visit(n.el);
-		if (isSubtype(t, e)) return e;
-		if (isSubtype(e, t)) return t;
-		throw new TypeException("Incompatible types in then-else branches",n.getLine());
-	}
+//	@Override
+//	public TypeNode visitNode(IfNode n) throws TypeException {
+//		if (print) printNode(n);
+//		if ( !(isSubtype(visit(n.cond), new BoolTypeNode())) )
+//			throw new TypeException("Non boolean condition in if",n.getLine());
+//		TypeNode t = visit(n.th);
+//		TypeNode e = visit(n.el);
+//		if (isSubtype(t, e)) return e;
+//		if (isSubtype(e, t)) return t;
+//		throw new TypeException("Incompatible types in then-else branches",n.getLine());
+//	}
 
 	@Override
 	public TypeNode visitNode(EqualNode n) throws TypeException {
@@ -249,33 +249,38 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 	public TypeNode visitNode(ClassNode n) throws TypeException {
 		if (print) printNode(n,n.id + ((n.superID==null)?"":"extends " + n.superID));
 
-		// aggiornare mappa superType
-		if (n.superID != null){
-			superType.put(n.id, n.superID);
-		}
-
-		// visita metodi
-		for (MethodNode method : n.methods){
-			visit(method);
-		}
-
-		// controllo dichiarazioni classi
 		if (n.superID != null){ // eredito
+			superType.put(n.id, n.superID); // aggiornare mappa superType
+
 			ClassTypeNode type = n.type;
-			ClassTypeNode parentType = (ClassTypeNode) n.superEntry.type;
-			// controllo overriding campi
-			for (int i=0; i<parentType.allFields.size();i++){
-				if(!(isSubtype(type.allFields.get(i),parentType.allFields.get(i)))){
-					throw new TypeException("Incompatible overrided type for field " +
-							n.fields.get(i).id, n.fields.get(i).getLine());
+			ClassTypeNode parentType = (ClassTypeNode) n.superEntry.type; // parentType = parentCT nelle slide
+
+			// campi (ottimizzato)
+			for (FieldNode field : n.fields){
+				int position = -field.offset -1;
+				if (position < parentType.allFields.size()) { // campi di cui faccio overriding
+					if(!(isSubtype(type.allFields.get(position),parentType.allFields.get(position)))){
+						throw new TypeException("Incompatible overrided type for field " +
+								n.fields.get(position).id, n.fields.get(position).getLine());
+					}
 				}
 			}
-			// controllo overriding metodi
-			for (int i=0; i<parentType.allMethods.size();i++){
-				if(!(isSubtype(type.allMethods.get(i),parentType.allMethods.get(i)))){
-					throw new TypeException("Incompatible overrided type for method " +
-							n.methods.get(i).id, n.methods.get(i).getLine());
+
+			// metodi (ottimizzato)
+			for (MethodNode method : n.methods){
+				int position = method.offset;
+				if (position < parentType.allMethods.size()) { // metodi di cui faccio overriding
+					if(!(isSubtype(type.allMethods.get(position),parentType.allMethods.get(position)))){
+						throw new TypeException("Incompatible overrided type for method " +
+								n.methods.get(position).id, n.methods.get(position).getLine());
+					}
 				}
+			}
+
+		} else { // non eredito
+			// visita metodi
+			for (MethodNode method : n.methods){
+				visit(method);
 			}
 		}
 
@@ -399,4 +404,26 @@ public class TypeCheckEASTVisitor extends BaseEASTVisitor<TypeNode,TypeException
 
 		return null;
 	}
+
+	// OTTIMIZZAZIONI
+
+	@Override
+	public TypeNode visitNode(IfNode n) throws TypeException {
+		if (print) printNode(n);
+
+		// type checking condizione
+		if ( !(isSubtype(visit(n.cond), new BoolTypeNode())) )
+			throw new TypeException("Non boolean condition in if",n.getLine());
+
+		// type checking then e else
+		TypeNode t = visit(n.th);
+		TypeNode e = visit(n.el);
+		TypeNode result = lowestCommonAncestor(t,e);
+		if(result == null){
+			throw new TypeException("Incompatible types in then-else branches",n.getLine());
+		} else {
+			return result;
+		}
+	}
+
 }
