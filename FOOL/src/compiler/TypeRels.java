@@ -74,8 +74,6 @@ public class TypeRels {
 			}
 		}
 
-
-
 		if ((a instanceof RefTypeNode || a instanceof EmptyTypeNode)
 				&& (b instanceof RefTypeNode || b instanceof EmptyTypeNode)){
 
@@ -83,7 +81,7 @@ public class TypeRels {
 			if(b instanceof EmptyTypeNode) return a;
 
 			String superClassId = "";
-			String classA = a.getClass().toString();
+			String classA =  ((RefTypeNode) a).id;
 
 			do{
 				superClassId = superType.get(classA);
