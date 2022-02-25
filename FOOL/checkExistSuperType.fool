@@ -1,0 +1,18 @@
+let
+
+  class A (a:int) {
+    fun c:int () a;
+  }
+  
+  class B extends A (b:A) {
+    fun d:int () a;
+  }
+
+  class T extends A (t:bool) {
+      fun r:int () t;
+  }
+
+  var bl:T = new T(1,true);
+  var bl2:B = new B(1,bl);
+
+in print(1);

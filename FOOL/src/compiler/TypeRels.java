@@ -14,7 +14,10 @@ public class TypeRels {
 	// valuta se il tipo "a" e' <= al tipo "b", dove "a" e "b" sono tipi di base: IntTypeNode o BoolTypeNode
 	public static boolean isSubtype(TypeNode a, TypeNode b) {
 
-		if (a.getClass().equals(b.getClass()) || ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))){
+		if( ((a instanceof BoolTypeNode) && (b instanceof IntTypeNode))
+		|| ((a instanceof BoolTypeNode) && (b instanceof BoolTypeNode))
+		|| ((a instanceof IntTypeNode) && (b instanceof IntTypeNode))
+		){
 			return true;
 		}
 
@@ -24,7 +27,11 @@ public class TypeRels {
 		}
 
 		if (a instanceof RefTypeNode && b instanceof RefTypeNode){
-			return existSuperType(a.getClass().toString(),b.getClass().toString());
+			String idA = ((RefTypeNode) a).id;
+			String idB = ((RefTypeNode) b).id;
+			//If necessario per dichiarazione di variabili del tipo A var = new A(); se no andavamo in superType e non trovavamo nulla
+			if(idA.equals(idB)) return true;
+			return existSuperType(idA, idB);
 		}
 
 		if (a instanceof ArrowTypeNode && b instanceof ArrowTypeNode){
@@ -55,7 +62,7 @@ public class TypeRels {
 
 		do{
 			t = superType.get(a);
-			if (t.equals(b)){
+			if (t != null && t.equals(b)){
 				return true;
 			}
 			a = t;
