@@ -361,22 +361,6 @@ public class SymbolTableASTVisitor extends BaseASTVisitor<Void,VoidException> {
 		List<TypeNode> parTypes = new ArrayList<>();
 		for (ParNode par : n.parlist) parTypes.add(par.getType());
 
-		// inserisco entry del metodo nella virtual table
-//		if(hm.containsKey(n.id)){ //overriding
-//			// controllo di non fare overriding di un campo
-//			if (!(hm.get(n.id).type instanceof MethodTypeNode)){
-//				System.out.println("Method id " + n.id + " at line "+ n.getLine() +" already declared as field id");
-//				stErrors++;
-//			}
-//			int oldOffset = hm.get(n.id).offset;
-//			STentry entry = new STentry(nestingLevel, new MethodTypeNode(new ArrowTypeNode(parTypes,n.retType)),oldOffset);
-//			n.offset = oldOffset;
-//			hm.put(n.id, entry);
-//		}else{ // no overriding
-//			n.offset = decOffset;
-//			STentry entry = new STentry(nestingLevel, new MethodTypeNode(new ArrowTypeNode(parTypes,n.retType)),decOffset++);
-//			hm.put(n.id, entry);
-//		}
 
 		MethodTypeNode methodType = new MethodTypeNode(new ArrowTypeNode(parTypes, n.retType));
 		n.setType(methodType);
