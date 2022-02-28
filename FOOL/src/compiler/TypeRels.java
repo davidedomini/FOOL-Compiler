@@ -89,6 +89,10 @@ public class TypeRels {
 
 			String superClassId = "";
 			String classA =  ((RefTypeNode) a).id;
+			String classB =  ((RefTypeNode) b).id;
+
+			if(classA.equals(classB)) return a;
+
 
 			do{
 				superClassId = superType.get(classA);

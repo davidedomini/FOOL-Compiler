@@ -1,0 +1,25 @@
+let
+
+    class List (){
+        fun add:bool(f:int) false;
+        fun get:int(i:int) 0;
+    }
+
+    class LinkedList extends List (f:int, r:List)
+    {
+      fun get:int(i:int) 1;
+    }
+
+    class ArrayList extends List (size:int)
+    {
+      fun get:int(i:int) 2;
+    }
+                                                        
+    fun list:List()
+        if(true)
+        then{ new LinkedList(2, null)}
+        else{ new ArrayList(1)};
+
+  var l: List = list();
+in print(l.get(0));
+

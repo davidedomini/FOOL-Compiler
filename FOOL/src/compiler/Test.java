@@ -10,7 +10,7 @@ import svm.*;
 public class Test {
     public static void main(String[] args) throws Exception {
    			
-    	String fileName = "checkOpt3.fool";
+    	String fileName = "quicksort.fool";
 
     	CharStream chars = CharStreams.fromFileName(fileName);
     	FOOLLexer lexer = new FOOLLexer(chars);

@@ -4,7 +4,7 @@ let
     fun getMon:int () money;
   }
   
-  class B extends A (money:bool, b:int, b:int) {
+  class B extends A (money:bool, b:int) {
     fun getInv:int () money;
     fun getInv:int () money;
   }
